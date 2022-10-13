@@ -30,6 +30,7 @@
 #include <rte_ether.h>
 #include <rte_lcore.h>
 #include <rte_ethdev.h>
+#include <rte_malloc.h>
 
 #include "util.h"
 #include "conf.h"
@@ -57,11 +58,11 @@ void stop(void) {
 
 void recv_test(struct conn_t* conn) {
     struct rte_mbuf      *bufs_rx[SERVER_SIZE_BURST_RX];
-    struct rte_mbuf      *bufs_tx[SERVER_SIZE_BURST_TX];
-    struct rte_ether_hdr *h_eth   = NULL;
-    struct rte_ipv4_hdr  *h_ip4   = NULL;
-    struct rte_tcp_hdr   *h_tcp   = NULL;
-    struct rte_udp_hdr   *h_udp   = NULL;
+    // struct rte_mbuf      *bufs_tx[SERVER_SIZE_BURST_TX];
+    // struct rte_ether_hdr *h_eth   = NULL;
+    // struct rte_ipv4_hdr  *h_ip4   = NULL;
+    // struct rte_tcp_hdr   *h_tcp   = NULL;
+    // struct rte_udp_hdr   *h_udp   = NULL;
 
     volatile bool* force_quit = get_quit();
     uint16_t nb_rx, loop;
@@ -95,15 +96,22 @@ lcore_daemon(struct conn_t* arg) {
         if (conf->data_size == 0) {
             data_size = 10 * conf->bufsize;
         }
+        uint64_t inc_id = 0;
         while (off < data_size) {
             for (int loop = 0; loop < conf->num_thread; loop++) {
                 uint64_t len = RTE_MIN(conf->bufsize, data_size - off);
                 char* addr = (char* ) malloc(len * sizeof(char));
+                // for (uint64_t iter = 0; iter < len; iter+=1024) {
+                //     addr[iter] = '0';
+                // }
+                // char* addr = (char* ) rte_malloc(NULL, len * sizeof(char), 0);
+                // char* addr = (char* ) rte_zmalloc_socket(NULL, len * sizeof(char), 0, ((int) rte_socket_id()));
 
                 struct task_t* task = (struct task_t* ) malloc(sizeof(struct task_t));
                 task->addr = addr;
                 task->len = len;
-                task->ID = loop;
+                // task->ID = loop;
+                task->ID = inc_id++;
                 list_append(list, (struct list_item_t*) task);
             }
             off = off + conf->bufsize;
@@ -112,7 +120,6 @@ lcore_daemon(struct conn_t* arg) {
 
     struct task_t* iter = NULL;
     YC_LIST_FOREACH(iter, list, struct task_t) {
-        // LOG_INFO("%lu %p %lu\n", iter->ID, iter->addr, iter->len);
         task_enqueue(iter);
     }
 
@@ -138,6 +145,7 @@ lcore_daemon(struct conn_t* arg) {
 
         YC_LIST_FOREACH(iter, list, struct task_t) {
             free(iter->addr);
+            // rte_free(iter->addr);
         }
         list_free(list);
         return 0;
@@ -170,6 +178,7 @@ lcore_daemon(struct conn_t* arg) {
 
     YC_LIST_FOREACH(iter, list, struct task_t) {
         free(iter->addr);
+        // rte_free(iter->addr);
     }
     list_free(list);
     return 0;
@@ -220,8 +229,8 @@ main(int argc, char** argv) {
     init_flow();
     init_core(conf);
 
-    uint16_t client_id = 1;
-    uint16_t server_id = 1;
+    // uint16_t client_id = 1;
+    // uint16_t server_id = 1;
     LOG_INFO("Launching lcore daemon ...\n");
     for (int loop = 1; loop < conf->total_lcore; loop++) {
         if (conf->is_server == true) {

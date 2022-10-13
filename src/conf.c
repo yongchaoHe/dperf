@@ -84,7 +84,7 @@ convert_to_bytes(char* str) {
     } else if (has_suffix(str, "T") == true) {
         temp = temp * 1000 * 1000 * 1000 * 1000;
     } else {
-        LOG_WARN("Unrecognized suffix in %s. Supported suffix is K/M/G/T, default to Byte\n", str);
+        // LOG_WARN("Unrecognized suffix in %s. Supported suffix is K/M/G/T, default to Byte\n", str);
     }
     return temp;
 }

@@ -64,7 +64,7 @@
 #define MAX_WND               512
 #define DEFAULT_PORT          5000
 // Task size (bytes)
-#define BUFSIZE               "1G"
+#define BUFSIZE               "2M"  // ??? ??? ??? ???
 #define MTU                   1500
 // RTT TEST
 /**
@@ -81,52 +81,55 @@
 #define MAX_RETRY             3
 
 struct conn_t {
-    unsigned ID;
-    unsigned lcore_id;
+    bool is_rtt;
     uint16_t port_id;
     uint16_t queue_id;
-    struct rte_mempool* mbuf_pool;
-    bool is_rtt;
     uint16_t pkt_size;
+    /* TCP/UDP Layer */        
+    uint16_t src_port;
+    uint16_t dst_port;  
 
-    /* Ethernet Layer */
-    struct rte_ether_addr src_mac;                   
-    struct rte_ether_addr dst_mac;
+    unsigned ID;
+    unsigned lcore_id;
+
+    struct rte_mempool* mbuf_pool;
+
     /* IP Layer */
     uint32_t src_addr;                               
     uint32_t dst_addr;    
-    /* TCP/UDP Layer */        
-    uint16_t src_port;
-    uint16_t dst_port;                   
-};
+    /* Ethernet Layer */
+    struct rte_ether_addr src_mac;                   
+    struct rte_ether_addr dst_mac;                 
+} __rte_cache_aligned;
 
 struct conf_t {
-    /* Common */
-    struct timeval interval;   // Time between periodic bandwidth reports
-    uint32_t src_ip;           // Local IP 
-    char src_ip_str[LEN_IP_ADDR];   
+    char src_ip_str[LEN_IP_ADDR];
+    char dst_ip_str[LEN_IP_ADDR];  
+    char path_to_cpumem[LEN_PATH];
+    char rtt_path[LEN_PATH];
+
+    bool is_rtt;               // By default, we measure bandwidth rather than rtt
+    bool is_server;
+    bool is_client;
+    bool is_udp;
+
     uint16_t port_id;
     uint16_t num_thread;       // Number of DPDK slave threads 
     uint16_t total_lcore;      // num_thread + 1
     uint16_t port_base;        // Base port, thread i's port = port_base + i
-    bool is_rtt;               // By default, we measure bandwidth rather than rtt
-    struct conn_t conn[MAX_LCORE];
-    char path_to_cpumem[LEN_PATH];
-    /* Server */
-    bool is_server;
-    /* Client */
-    bool is_client;
-    bool is_udp;
     uint16_t win_size;         // Max sliding window size
     uint16_t pkt_size;         // Packet size, Ethernet + IP + TCP/UDP + payload
-    struct timeval all_time;   // Time to transmit for 
+
+    uint32_t src_ip;           // Local IP    
+    uint32_t dst_ip;           // Server's IP
+    uint32_t num_ping;
     uint64_t data_size;        // Number of bytes to transmit
     uint64_t bufsize;          // Size of the sending task
-    uint32_t dst_ip;           // Server's IP
-    char dst_ip_str[LEN_IP_ADDR];    
-    uint32_t num_ping;
-    char rtt_path[LEN_PATH];
-};
+
+    struct timeval all_time;   // Time to transmit for 
+    struct timeval interval;   // Time between periodic bandwidth reports
+    struct conn_t conn[MAX_LCORE];
+} __rte_cache_aligned;
 
 /**
  * Get the address of the global configuration variable `conf`

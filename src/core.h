@@ -9,16 +9,12 @@ struct task_t {
     uint64_t ID;
     char* addr;
     uint64_t len;
-};
+} __rte_cache_aligned;
 
 struct ping_t {
     list_item_t super;
     uint64_t rtt;
 };
-
-static int ping_cmpfunc(list_item_t** a, list_item_t** b) {
-    return ((*((struct ping_t**) a))->rtt) - ((*((struct ping_t**) b))->rtt); 
-}
 
 /**
  * A structure to record the sender/receiver's state.

@@ -307,7 +307,8 @@ time_strto_tv(char* time, struct timeval* tv) {
         tv->tv_sec  = temp * 60 * 60;
         tv->tv_usec = 0;
     } else {
-        success = -1;
+        tv->tv_sec  = temp;
+        tv->tv_usec = 0;
     }
     return success;
 }

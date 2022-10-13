@@ -267,6 +267,7 @@ _init_flow(int index, uint16_t port_id,  uint32_t dst_ip, uint32_t mask_ip, uint
     // );
 
     /* match udp destination port */
+    /*
     memset(&udp_spec, 0, sizeof(struct rte_flow_item_udp));
     memset(&udp_mask, 0, sizeof(struct rte_flow_item_udp));
     udp_spec.hdr.dst_port = dst_port;
@@ -277,6 +278,7 @@ _init_flow(int index, uint16_t port_id,  uint32_t dst_ip, uint32_t mask_ip, uint
 
     pattern[3].type = RTE_FLOW_ITEM_TYPE_END;
     add_rule(port_id, &attr, pattern, action);
+    */
 
     /* match tcp destination port */
     memset(&tcp_spec, 0, sizeof(struct rte_flow_item_tcp));

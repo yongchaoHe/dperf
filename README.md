@@ -24,20 +24,20 @@ dperf supports three modes: TCP, UDP and RTT. ...
   ```
 
 ## Getting started
-We use two end-hosts for experiments, one serves as the client (`192.168.0.1`), the other serves as the server (`192.168.0.3`). Here are some examples:
+We use two end-hosts for experiments, one serves as the client (`192.168.0.1`), the other serves as the server (`192.168.0.7`). Here are some examples:
 * TCP Bandwidth test
   * at the server-side: `sudo ./build/dperf -B 192.168.1.7 -P 4 -s`
   * at the client-side: `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 4`
 
 * UDP Bandwidth test
-  * TEST 1: Generate UDP traffic using 4 threads from 192.168.1.1 to 192.168.1.7 for 15s
-    * `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 4 -t 15 -u`
-  * TEST 2: Generate 10GBytes(per thread) UDP traffic using 4 threads from 192.168.1.1 to 192.168.1.7
-    * `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 4 -n 10G -u`
+  * TEST 1: Generate UDP traffic (packet size 256B) using 4 threads from 192.168.1.1 to 192.168.1.7 for 15s
+    * `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 4 -t 15 -l 256 -u`
+  * TEST 2: Generate 1GBytes(per thread) UDP traffic using 4 threads from 192.168.1.1 to 192.168.1.7
+    * `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 4 -n 1G -u`
 
 * Latency test
-  * at the server-side: `sudo ./build/dperf -B 192.168.1.7 -P 2 -s --rtt`
-  * at the client-side: `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 2 --rtt`
+  * at the server-side: `sudo ./build/dperf -B 192.168.1.7 -P 1 -s --rtt`
+  * at the client-side: `sudo ./build/dperf -B 192.168.1.1 -c 192.168.1.7 -P 1 --rtt`
 
 * For more options
   ```

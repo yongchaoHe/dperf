@@ -104,7 +104,7 @@ print_nstats(struct nstats stat, uint16_t num_queue) {
         "Queue ID,  RX Packets,  TX Packets,  RX GBytes,  TX GBytes,  Dropped (RX)\n"
     );
 
-    struct conf_t* conf = get_conf();
+    // struct conf_t* conf = get_conf();
     for (uint16_t loop = 0; loop < RTE_MIN(num_queue, RTE_ETHDEV_QUEUE_STAT_CNTRS); loop++) {
         LOG_INFO(
             "   %02hu      %10lu   %10lu    %8.3f    %8.3f     %10lu\n",
@@ -357,7 +357,8 @@ void init_stat(void) {
     struct conf_t* conf = get_conf();
     ethstat = new_nstats(conf->port_id);
 
-    uint64_t prev_tsc = 0, cur_tsc, diff_tsc;
+    // uint64_t prev_tsc = 0, cur_tsc, diff_tsc;
+    uint64_t prev_tsc = 0;
     // struct stats tfs = {0};
     sprintf(tfs.cpu_path, "/proc/%u/stat", getpid());
     sprintf(tfs.mem_path, "/proc/%u/status", getpid());
