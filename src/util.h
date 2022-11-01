@@ -117,6 +117,27 @@ int nic_getnumanode_by_businfo(const char* businfo);
 int nic_getcpus_by_numa(int numa_node, char** cpu_list);
 
 /**
+ * Transform an IP address to dotted IP address string.
+ * 
+ * @para ip
+ *   Input, IP address
+ * @para str
+ *   Output, dotted IP address string
+ */
+void ip_to_str(uint32_t ip, char *str);
+
+/**
+ * Read routing table from /proc/net/route and return next-hop ip of given ip, may throw an error.
+ * 
+ * @para dst_ip
+ *   IP address
+ * @return
+ *   ip address : if a record exists in the arp cache
+ * 
+ */
+uint32_t get_ip_nexthop (uint32_t dst_ip);
+
+/**
  * Read arp cache from /proc/net/arp and return MAC for the given ip
  * 
  * @para ip_addr

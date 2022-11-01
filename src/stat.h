@@ -57,8 +57,8 @@ struct stats {
     struct rte_eth_stats nstat_cur;
     struct pstats pstat_pre;
     struct pstats pstat_cur;
-    char cpu_path[20];
-    char mem_path[20];
+    char cpu_path[30];
+    char mem_path[30];
 };
 
 /**
