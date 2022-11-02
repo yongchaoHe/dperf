@@ -388,7 +388,10 @@ void init_conn(void) {
 
     if (conf->is_client == true) {
         for (uint16_t loop = 0; loop <= conf->num_thread; loop++) {
-            conf->conn[loop].dst_mac = nic_getarp_by_ip(conf->dst_ip_str);
+            char nexthop_ip_str[LEN_IP_ADDR];  
+            uint32_t nexthop_ip = get_ip_nexthop(conf->dst_ip);
+            ip_to_str(nexthop_ip, nexthop_ip_str);
+            conf->conn[loop].dst_mac = nic_getarp_by_ip(nexthop_ip_str);
             conf->conn[loop].dst_addr = conf->dst_ip;
             conf->conn[loop].dst_port = htons(conf->port_base + loop);
             conf->conn[loop].pkt_size = conf->pkt_size;

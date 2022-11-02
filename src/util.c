@@ -176,6 +176,51 @@ nic_getcpus_by_numa(int numa_node, char** cpu_list) {
     return 0;
 }
 
+void ip_to_str(uint32_t ip, char *str) {
+    str[0] = 0;
+    for(int i = 0; i < 32; i += 8) {
+        uint32_t byte = (ip >> i) & 0xff;
+        sprintf(str + strlen(str), "%d.", byte);
+    }
+    str[strlen(str)-1] = 0;
+}
+
+uint32_t 
+get_ip_nexthop (uint32_t dst_ip) {
+    FILE* fp = fopen("/proc/net/route", "r");
+    char buff [256] = {};
+    bool chosen = 0;
+    uint32_t chosen_ip_net, chosen_ip_mask, chosen_gateway;
+    if (fp != NULL) {
+        int ignored = 0;
+        ignored = fscanf(fp, "%*[^\n]%*c");
+        while (fscanf(fp, "%[^\n]%*c", buff) != EOF) {
+            uint32_t ip_net, gateway, ip_mask;
+            ignored = sscanf(buff, "%*s %x %x %*s %*s %*s %*s %x", &ip_net, &gateway, &ip_mask);
+    
+            if((dst_ip & ip_mask) == ip_net) {
+                if(!chosen || ip_mask > chosen_ip_mask) {
+                    chosen = 1;
+                    chosen_ip_net = ip_net;
+                    chosen_ip_mask = ip_mask;
+                    chosen_gateway = gateway;
+                }
+            }
+        }
+        fclose(fp);
+    }
+    if(!chosen) {
+        LOG_ERRO("Routing Error: The destination network could not be found in routing table.\n");
+        exit(-1);
+    }
+    if(chosen_gateway == 0) {
+        return dst_ip;
+    }
+    else {
+        return chosen_gateway;
+    }
+}
+
 struct rte_ether_addr 
 nic_getarp_by_ip(char* ip_addr) {
     struct rte_ether_addr ret = {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};

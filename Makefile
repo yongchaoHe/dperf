@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright(c) 2010-2014 Intel Corporation
 
-APP = dperf 
+APP = dperf
 
 # all source are stored in SRCS-y
-SRCS-y := src/*.c 
+SRCS-y := src/*.c
 
 # Build using pkg-config variables if possible
 ifneq ($(shell pkg-config --exists libdpdk && echo 0),0)
@@ -15,7 +15,7 @@ $(error This application can only operate in a linux environment)
 endif
 
 all: main
-.PHONY: main 
+.PHONY: main
 main: build/${APP}
 
 PKGCONF ?= pkg-config
@@ -35,8 +35,8 @@ build:
 	@mkdir -p $@
 
 .PHONY: install
-install: $(APP)
-	cp $(APP) /usr/local/bin
+install: build/${APP}
+	cp $< /usr/local/bin
 
 .PHONY: clean
 clean:
